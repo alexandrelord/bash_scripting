@@ -1,44 +1,39 @@
 NUMS=()
-INT_REGEX='[^0-9]'
-PRODUCT=1
-SUM=0
+RED='\033[0;31m'
+NC='\033[0m'
 
-echo "Please enter 5 to 10 positive integers"
+function prompt_input () {
+   read -p "Enter an integer: " num
+   while [[ ! $num =~ ^-?[0-9]+$ ]]; do
+      echo -e "${RED}Invalid input${NC}"
+      read -p "Enter an integer: " num
+   done
+   NUMS+=($num)
+}
 
-for i in {1..10}; do
-   
+function prompt_add_input () {
+   read -p "Add integer? [y/n]: " yesno
+   if [[ ! $yesno =~ y ]]; then
+      return 1
+   fi
+   prompt_input
+} 
+
+for i in {1..10}; do  
    if [ $i -le 5 ]; then
-      echo "Please enter integer $i"
-      read number
-      while [[ $number =~ $INT_REGEX ]]; do
-         echo "You did not enter an integer"
-         echo "Please enter integer $i"
-         read number
-      done
-      NUMS+=($number)
+      prompt_input
    fi
    
    if [ $i -gt 5 ]; then
-      echo "Would you like to add another number? [y/n]"
-      read answer
-      if [ $answer == y ]; then
-         echo "Please enter integer $i"
-         read number
-      else 
-         break
-      fi
-      while [[ $number =~ $INT_REGEX ]]; do
-         echo "You did not enter an integer"
-         echo "Please enter integer $i"
-         read number
-      done
-      NUMS+=($number)
+      prompt_add_input || break
    fi
 done
-  
+
+PRODUCT=1
+SUM=0
 MAX=${NUMS[0]}
 MIN=${NUMS[0]}
- 
+  
 for i in "${NUMS[@]}"; do
   (( PRODUCT*=$i ))
   (( SUM+=$i ))
